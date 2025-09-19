@@ -1,77 +1,50 @@
-import { useEffect, useState } from 'react'
-import { movieSearch } from '../../services/movieService'
-import SearchBar from '../SearchBar/SearchBar'
-import styles from './App.module.css'
-import type { Movie } from '../../types/movie'
-import  toast, { Toaster } from 'react-hot-toast'
-import MovieGrid from '../MovieGrid/MovieGrid'
-import Loader from '../Loader/Loader'
-import ErrorMessage from '../ErrorMessage/ErrorMessage'
-import MovieModal from '../MovieModal/MovieModal'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import NoteList from '../NoteList/NoteList'
+import css from './App.module.css'
+import { fetchNotes } from '../../services/noteService'
 import ReactPaginate from 'react-paginate'
+import { useState } from 'react'
 
 const App = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-    const [submitV, setSubmitV] = useState<string>("")
     const [page, setPage] = useState(1);
 
-   
 
-
-    const {data, isError, isLoading, isSuccess} = useQuery({
-            queryKey: ['movie', submitV, page],
-            queryFn: () => movieSearch(submitV, page),
-            enabled: !!submitV,
-        placeholderData: keepPreviousData,
-            
+    const {data} = useQuery({
+        queryKey: ["task", page],
+        queryFn: () => fetchNotes(page),
+        placeholderData: keepPreviousData
+        
     });
+    console.log(data);
+    
+    
+    
 
-    useEffect(() => {
-        if (isSuccess && submitV.trim() && data?.results.length === 0) {
-            toast('Nothing was found');
-        }
-    }, [isSuccess, data, submitV]);
-    
-    const totalPages = data?.total_pages ?? 0;
-    const hasResults = (data?.results?.length ?? 0) > 0;
-    const showPagination = totalPages > 1 && hasResults;
-    
-    const handleSubmit = async (submitValue: string) => {
-        setSubmitV(submitValue);
-        setPage(1)
-    }
-    
-    const handleSelect = (movie: Movie) => {
-        setSelectedMovie(movie)
-        setIsModalOpen(true)
-    }
 
-    const handleClose = () => {
-        setIsModalOpen(false);
-        setSelectedMovie(null);
-    }
-    
-    return (<div className={styles.app}>
-        <Toaster />
-        <SearchBar onSubmit={handleSubmit} />
-        {showPagination && <ReactPaginate
-            pageCount={data?.total_pages ?? 0}
-            pageRangeDisplayed={5}
-            marginPagesDisplayed={1}
-            onPageChange={({ selected }) => setPage(selected + 1)}
-            forcePage={page - 1}
-            containerClassName={styles.pagination}
-            activeClassName={styles.active}
-            nextLabel="→"
-            previousLabel="←"
-            renderOnZeroPageCount={null}
-        />}
-        {isLoading && <Loader />}
-        {isError ? (<ErrorMessage />) : <MovieGrid onSelect={handleSelect} movies={data?.results ?? []} />}
-        {isModalOpen && selectedMovie && (<MovieModal movie={selectedMovie!} onClose={handleClose}/>)}
-    </div>)
+
+
+    return (
+        <div className={css.app}>
+	<header className={css.toolbar}>
+		{/* Компонент SearchBox */}
+		{data &&<ReactPaginate
+                pageCount={data?.totalPages ?? 0}
+                pageRangeDisplayed={5}
+                marginPagesDisplayed={1}
+                onPageChange={({ selected }) => setPage(selected + 1)}
+                forcePage={page - 1}
+                containerClassName={css.pagination}
+                activeClassName={css.active}
+                nextLabel="→"
+                previousLabel="←"
+                renderOnZeroPageCount={null}
+            />}
+		{/* Кнопка створення нотатки */}
+            </header>
+            
+            <NoteList notes={data?.notes ?? []} />
+</div>
+    )
 }
 
 export default App
