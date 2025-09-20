@@ -2,7 +2,7 @@ import { ErrorMessage, Field, Form, Formik, type FormikHelpers } from 'formik'
 import css from './NoteForm.module.css'
 import * as Yup from "yup";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createNote } from '../../services/noteService';
+import { createNote, deleteNote } from '../../services/noteService';
 import type { CreateNoteRequest } from '../../types/note';
 
 interface NoteFormProps{
@@ -31,11 +31,6 @@ const FormSchema = Yup.object().shape({
 
 const NoteForm = ({ onClose }: NoteFormProps) => {
   const queryClient = useQueryClient()
-  const handleSubmit = (values:FormData, formikHelpers: FormikHelpers<FormData>) => {
-    console.log(values);
-    formikHelpers.resetForm();
-    mutation.mutate(values)
-  }
 
   const mutation = useMutation({
     mutationFn: (newNote: CreateNoteRequest) => createNote(newNote),
@@ -43,6 +38,13 @@ const NoteForm = ({ onClose }: NoteFormProps) => {
       queryClient.invalidateQueries({queryKey: ["task"]})
     }
   })
+  
+  const handleSubmit = (values:FormData, formikHelpers: FormikHelpers<FormData>) => {
+    console.log(values);
+    formikHelpers.resetForm();
+    mutation.mutate(values)
+  }
+
   
   return (<Formik initialValues={defaultFormData} onSubmit={handleSubmit} validationSchema={FormSchema}>
     <Form className={css.form}>
