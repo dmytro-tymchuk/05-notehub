@@ -1,26 +1,31 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import NoteList from '../NoteList/NoteList'
 import css from './App.module.css'
-import { fetchNotes } from '../../services/noteService'
+import { fetchNotes, type NoteResponse } from '../../services/noteService'
 import ReactPaginate from 'react-paginate'
-import { useState } from 'react'
+import {useState } from 'react'
+import Modal from '../Modal/Modal'
 
 const App = () => {
     const [page, setPage] = useState(1);
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
 
-    const {data} = useQuery({
+    const {data} = useQuery<NoteResponse>({
         queryKey: ["task", page],
         queryFn: () => fetchNotes(page),
         placeholderData: keepPreviousData
         
     });
-    console.log(data);
     
     
-    
+    const handleClick = () => {
+        setIsModalOpen(true)
+    }
 
-
+    const handleCLose = () => {
+        setIsModalOpen(false)
+    }
 
 
     return (
@@ -39,11 +44,11 @@ const App = () => {
                 previousLabel="←"
                 renderOnZeroPageCount={null}
             />}
-		{/* Кнопка створення нотатки */}
+                <button className={css.button} onClick={handleClick}>Create note +</button>
+                {isModalOpen && <Modal onRequestClose={handleCLose} />}
             </header>
-            
             <NoteList notes={data?.notes ?? []} />
-</div>
+    </div>
     )
 }
 
