@@ -8,7 +8,8 @@ import SearchBox from '../SearchBox/SearchBox'
 import { useDebouncedCallback } from 'use-debounce';
 import Loader from '../Loader/Loader'
 import ErrorMessage from '../ErrorMessage/ErrorMessage'
-import Pagination from '../Pagination/PAgination'
+import Pagination from '../Pagination/Pagination'
+
 
 const App = () => {
     const [page, setPage] = useState(1);
