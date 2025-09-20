@@ -2,13 +2,13 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import NoteList from '../NoteList/NoteList'
 import css from './App.module.css'
 import { fetchNotes, type NoteResponse } from '../../services/noteService'
-import ReactPaginate from 'react-paginate'
 import {useState } from 'react'
 import Modal from '../Modal/Modal'
 import SearchBox from '../SearchBox/SearchBox'
 import { useDebouncedCallback } from 'use-debounce';
 import Loader from '../Loader/Loader'
 import ErrorMessage from '../ErrorMessage/ErrorMessage'
+import Pagination from '../Pagination/PAgination'
 
 const App = () => {
     const [page, setPage] = useState(1);
@@ -42,18 +42,7 @@ const App = () => {
         <div className={css.app}>
 	<header className={css.toolbar}>
                 <SearchBox searchValue={searchValue} onChange={handleChange} />
-		{totalPages > 1 &&<ReactPaginate
-                pageCount={data?.totalPages ?? 0}
-                pageRangeDisplayed={5}
-                marginPagesDisplayed={1}
-                onPageChange={({ selected }) => setPage(selected + 1)}
-                forcePage={page - 1}
-                containerClassName={css.pagination}
-                activeClassName={css.active}
-                nextLabel="→"
-                previousLabel="←"
-                renderOnZeroPageCount={null}
-            />}
+                {totalPages > 1 && <Pagination onChange={setPage} pageCount = {totalPages} page={page} />}
                 <button className={css.button} onClick={handleClick}>Create note +</button>
                 {isModalOpen && <Modal onRequestClose={handleCLose} />}
             </header>
