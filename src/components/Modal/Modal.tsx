@@ -1,40 +1,43 @@
 import { createPortal } from 'react-dom'
 import css from './Modal.module.css'
-import NoteForm from '../NoteForm/NoteForm'
 import { useEffect } from 'react';
-interface ModalProps{
-    onRequestClose: () => void
+
+interface ModalProps {
+  onRequestClose: () => void
+  children: React.ReactNode
 }
 
-const Modal = ({onRequestClose}:ModalProps) => {
-    useEffect(() => {
-	  const handleKeyDown = (e: KeyboardEvent) => {
-	    if (e.key === "Escape") {
-	      onRequestClose();
-	    }
-	  };
-        document.addEventListener("keydown", handleKeyDown);
-        document.body.style.overflow = "hidden";
-	
-	  return () => {
-          document.removeEventListener("keydown", handleKeyDown);
-          document.body.style.overflow = "";
-	  };
-    }, [onRequestClose]);
+const Modal = ({ onRequestClose, children }: ModalProps) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onRequestClose()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    document.body.style.overflow = 'hidden'
 
-    const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) onRequestClose();   // click outside modal
-  };
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
+    }
+  }, [onRequestClose])
 
-    
-    return createPortal(
-        <div className={css.backdrop} role="dialog"
-            aria-modal="true"
-            onClick={handleBackdrop}>
-  <div className={css.modal}>
-    {<NoteForm onClose={onRequestClose}/>}
-  </div>
-</div>, document.body)
+  const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) onRequestClose()
+  }
+
+  return createPortal(
+    <div
+      className={css.backdrop}
+      role="dialog"
+      aria-modal="true"
+      onClick={handleBackdrop}
+    >
+      <div className={css.modal}>{children}</div>
+    </div>,
+    document.body
+  )
 }
 
 export default Modal

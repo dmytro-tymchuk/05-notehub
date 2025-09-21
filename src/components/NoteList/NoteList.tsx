@@ -3,11 +3,11 @@ import type { Note } from '../../types/note'
 import css from './NoteList.module.css'
 import { deleteNote } from '../../services/noteService'
 
-interface dataProps{
+interface NoteListProps{
     notes: Note[]
 }
 
-const NoteList = ({ notes }: dataProps) => {
+const NoteList = ({ notes }: NoteListProps) => {
   const queryClient = useQueryClient();
   
   const handleDelete = (taskId: string) => {

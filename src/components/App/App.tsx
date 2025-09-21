@@ -9,6 +9,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import Loader from '../Loader/Loader'
 import ErrorMessage from '../ErrorMessage/ErrorMessage'
 import Pagination from '../Pagination/Pagination'
+import NoteForm from '../NoteForm/NoteForm'
 
 
 const App = () => {
@@ -43,9 +44,13 @@ const App = () => {
         <div className={css.app}>
 	<header className={css.toolbar}>
                 <SearchBox searchValue={searchValue} onChange={handleChange} />
-                {totalPages > 1 && <Pagination onChange={setPage} pageCount = {totalPages} page={page} />}
+                {totalPages > 1 && <Pagination onChange={setPage} totalPages = {totalPages} currentPage={page} />}
                 <button className={css.button} onClick={handleClick}>Create note +</button>
-                {isModalOpen && <Modal onRequestClose={handleCLose} />}
+                {isModalOpen && (
+        <Modal onRequestClose={handleCLose}>
+          <NoteForm onClose={handleCLose} />
+        </Modal>
+      )}
             </header>
             {isLoading && <Loader />}
             {isError ? (<ErrorMessage />) : <NoteList notes={data?.notes ?? []} />}  
